@@ -2,11 +2,12 @@ import React from 'react'
 import fetch from 'isomorphic-unfetch'
 
 import Head from '../components/head'
-import { Row, Col, Input, Card, Avatar, Popover } from 'antd';
+import { Row, Col, Input, Card, Avatar, Popover, Layout } from 'antd';
 import 'antd/dist/antd.min.css'
 import 'animate.css/animate.min.css'
 
 const Search = Input.Search;
+const { Content, Footer } = Layout;
 const { Meta } = Card
 
 export default class Home extends React.Component {
@@ -15,13 +16,14 @@ export default class Home extends React.Component {
     super(props)
     this.state = {
       results: [],
-      loading: false
+      loading: false,
+      searched: false,
     }
   }
 
   // Handle a search
   async handleSearch(query) {
-    this.setState({ loading: true })
+    this.setState({ loading: true, searched: true })
     const res = await fetch(`https://haveibeenpwned.com/api/v2/breachedaccount/${query}`)
 
     try {
@@ -62,68 +64,118 @@ export default class Home extends React.Component {
       <div>
         <Head />
 
-        <Row type="flex" justify="center" className="animated fadeIn">
-          <h1 className="title">Sombra</h1>
-          <p className="description">
-            Instantly search the web for hacked data
-          </p>
-        </Row>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Content>
+            <Row type="flex" justify="center" className="animated fadeIn">
+              <h1 className="title">Who hacked me?</h1>
+              <p className="description">
+                Instantly search the web for hacked data
+              </p>
+            </Row>
 
-        <Row type="flex" justify="center" style={{ marginTop: '2em' }} className="animated fadeIn slow">
-          <Col xs={20} sm={20} md={12}>
-            <Search
-              style={{ textAlign: 'center' }}
-              placeholder="Search an email or username"
-              enterButton
-              size="large"
-              onSearch={value => this.handleSearch(value)}
-            />
-          </Col>
-        </Row>
-
-
-        <Row type="flex" justify="center" style={{ marginTop: '2em', marginBottom: '2rem' }}>
-          {
-            this.state.loading
-              ?
-              <Col sm={24} md={16} style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                <Card style={{ marginTop: 16 }} loading={this.state.loading}>
-                  <Meta
-                    title="Loading..."
-                    description="Loading..."
-                  />
-                </Card>
+            <Row type="flex" justify="center" style={{ marginTop: '2em' }} className="animated fadeIn slow">
+              <Col xs={20} sm={20} md={12}>
+                <Search
+                  style={{ textAlign: 'center' }}
+                  placeholder="Search an email or username"
+                  enterButton
+                  size="large"
+                  onSearch={value => this.handleSearch(value)}
+                />
               </Col>
-              :
-              this.state.results.map((hack, index) => (
-                <Col key={hack.Name} sm={24} md={16} style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                  <Popover
-                    title="Information"
-                    placement="bottom"
-                    trigger="click"
-                    content={
-                      <ul>
-                        {hack.DataClasses.map(e => (
-                          <li>{e}</li>
-                        ))}
-                      </ul>
-                    }>
-                    <Card
-                      className={'animated fadeInUp ' + this.getFadeInSpeed(index)}
-                      style={{ marginTop: 16 }}
-                      loading={this.state.loading}
-                      hoverable>
-                      <Meta
-                        avatar={<Avatar src={this.getLogo(hack.Name, hack.LogoType)} />}
-                        title={hack.Name}
-                        description={this.strip(hack.Description)}
-                      />
-                    </Card>
-                  </Popover>
-                </Col>
-              ))
-          }
-        </Row>
+            </Row>
+
+
+            <Row type="flex" justify="center" style={{ marginTop: '2em', marginBottom: '2rem' }}>
+              {
+                this.state.loading
+                  ?
+                  <>
+                    <Col xs={24} sm={24} md={16} lg={16} xl={16} style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                      <Card style={{ marginTop: 16 }} loading={this.state.loading}>
+                        <Meta
+                          title="Loading..."
+                          description="Loading..."
+                        />
+                      </Card>
+                    </Col>
+                    <Col xs={24} sm={24} md={16} lg={16} xl={16} style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                      <Card style={{ marginTop: 16 }} loading={this.state.loading}>
+                        <Meta
+                          title="Loading..."
+                          description="Loading..."
+                        />
+                      </Card>
+                    </Col>
+                    <Col xs={24} sm={24} md={16} lg={16} xl={16} style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                      <Card style={{ marginTop: 16 }} loading={this.state.loading}>
+                        <Meta
+                          title="Loading..."
+                          description="Loading..."
+                        />
+                      </Card>
+                    </Col>
+                  </>
+                  :
+                  <>
+                    {
+                      this.state.searched
+                      ? 
+                        <Col span={24} style={{ margin: '1em'}}>
+                          <p className="leak_description">Your data appeared in <b>{this.state.results.length}</b> database leaks</p>
+                        </Col>
+                      :
+                      <></>
+                    }
+                    {
+                      this.state.results.map((hack, index) => (
+                        <Col key={hack.Name} sm={24} md={16} style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                          <Popover
+                            title="Information"
+                            placement="bottom"
+                            trigger="click"
+                            content={
+                              <ul>
+                                {hack.DataClasses.map(e => (
+                                  <li>{e}</li>
+                                ))}
+                              </ul>
+                            }>
+                            <Card
+                              className={'animated fadeInUp ' + this.getFadeInSpeed(index)}
+                              style={{ marginTop: 16 }}
+                              loading={this.state.loading}
+                              hoverable>
+                              <Meta
+                                avatar={<Avatar src={this.getLogo(hack.Name, hack.LogoType)} />}
+                                title={hack.Name}
+                                description={this.strip(hack.Description)}
+                              />
+                            </Card>
+                          </Popover>
+                        </Col>
+                      ))
+                    }
+                </>
+              }
+            </Row>
+          </Content>
+
+          <Footer>
+            <Row  type="flex" justify="center">
+              <Col span={24} style={{ textAlign: 'center' }}>
+                <a className="footer" href="https://github.com/petercunha/WhoHackedMe">Github</a>
+                <a className="footer"> • </a>
+                <a className="footer" href="https://wintermute.technology">Wintermute Technology</a>
+                <a className="footer"> • </a>
+                <a className="footer" href="https://haveibeenpwned.com/API/v2">API</a>
+              </Col>
+            </Row>
+          </Footer>
+        </Layout>
+        
+
+        
 
         <style jsx>{`
       .hero {
@@ -140,6 +192,14 @@ export default class Home extends React.Component {
       .title,
       .description {
         text-align: center;
+      }
+      .leak_description {
+        text-align: center;
+        color: #888;
+      }
+      .footer {
+        color: #AAA;
+        font-size: 0.9em;
       }
       .row {
         max-width: 880px;

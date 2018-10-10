@@ -2,7 +2,7 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
-const defaultTitle = 'Sombra'
+const defaultTitle = 'Who hacked me?'
 const defaultDescription = 'Instantly search the web for hacked data.'
 const defaultOGURL = ''
 const defaultOGImage = ''
