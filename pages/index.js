@@ -62,7 +62,7 @@ export default class Home extends React.Component {
       <div>
         <Head />
 
-        <Row type="flex" justify="center" className="animated fadeInDown">
+        <Row type="flex" justify="center" className="animated fadeIn">
           <h1 className="title">Sombra</h1>
           <p className="description">
             Instantly search the web for hacked data
