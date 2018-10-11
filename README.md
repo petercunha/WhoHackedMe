@@ -2,6 +2,8 @@
 
 Search the internet for hacked data. Check if your username or email appears in any database leaks.
 
+![Demo](https://i.imgur.com/jhmT9ry.png)
+
 ## Demo
 
 You can try it out here: https://sombra.wintermute.technology
